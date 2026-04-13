@@ -9,6 +9,7 @@ A high-performance, full-stack Linktree clone built with the modern Next.js 14 A
 - **Drag & Drop Reordering**: Intuitively reorder your links on the dashboard using `@hello-pangea/dnd`.
 - **Advanced Analytics**: Track clicks, view 30-day timelines, and see device/country breakdowns (powered by Recharts and Vercel geo-headers).
 - **Secure Authentication**: NextAuth v5 credentials provider with bcrypt password hashing.
+- **Guest Access**: Instantly test out the full dashboard and tracking capabilities without creating an account using the "Continue as Guest" feature.
 - **Dashboard**: A powerful admin interface for managing your profile, links, and analytics.
 
 ## Tech Stack 🛠️
