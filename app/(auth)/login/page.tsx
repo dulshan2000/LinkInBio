@@ -6,13 +6,48 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, Lock, ArrowRight, UserCircle2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [guestLoading, setGuestLoading] = useState(false);
+
+  async function handleGuest() {
+    setGuestLoading(true);
+    const uuid = crypto.randomUUID().slice(0, 8);
+    const guestForm = {
+      name: "Guest User",
+      email: `guest_${uuid}@guest.linkinbio.app`,
+      password: crypto.randomUUID(),
+    };
+
+    try {
+      await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(guestForm),
+      });
+      const result = await signIn("credentials", {
+        email: guestForm.email,
+        password: guestForm.password,
+        redirect: false,
+      });
+
+      if (!result?.error) {
+        router.push("/dashboard");
+        router.refresh();
+      } else {
+        setError("Guest login failed. Try again.");
+        setGuestLoading(false);
+      }
+    } catch {
+      setError("An error occurred");
+      setGuestLoading(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -81,11 +116,33 @@ export default function LoginPage() {
           variant="glow"
           size="lg"
           className="w-full mt-2"
-          loading={loading}
+          loading={loading && !guestLoading}
+          disabled={guestLoading}
         >
           Sign in <ArrowRight size={16} />
         </Button>
       </form>
+
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-zinc-800"></div>
+        </div>
+        <div className="relative flex justify-center text-xs">
+          <span className="bg-background px-2 text-zinc-500 uppercase tracking-wider font-medium">Or</span>
+        </div>
+      </div>
+
+      <Button
+        type="button"
+        variant="outline"
+        size="lg"
+        className="w-full border-zinc-800 hover:bg-zinc-900 border"
+        onClick={handleGuest}
+        loading={guestLoading}
+        disabled={loading}
+      >
+        <UserCircle2 size={16} className="mr-2 text-zinc-400" /> Continue as Guest
+      </Button>
 
       <p className="text-center text-sm text-zinc-400 mt-6">
         Don&apos;t have an account?{" "}
